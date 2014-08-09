@@ -3,6 +3,8 @@ openshift-diy-php
 
 This is a sample repository to get a custom PHP version running on [openshift](https://openshift.redhat.com).
 
+and a updated version of ( https://github.com/elkuku/openshift-diy-php)
+
 It's a work in progress!
 
 What's inside
