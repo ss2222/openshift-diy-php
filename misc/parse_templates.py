@@ -1,16 +1,20 @@
 import os, re, shutil
-#
+# #
 internalIp = os.environ['OPENSHIFT_DIY_IP']
 runtimeDir = os.environ['OPENSHIFT_HOMEDIR'] + "/app-root/runtime"
 repoDir = os.environ['OPENSHIFT_HOMEDIR'] + "/app-root/runtime/repo/openshift-diy-php"
-Bash_File=os.environ('OPENSHIFT_HOMEDIR')
+Bash_File=os.environ['OPENSHIFT_HOMEDIR']
 
-CurrentDir=os.path.abspath(os.path.join(os.getcwd(), '..'))
-# CurrentDir=os.getcwd()+'\\openshift-diy-php-master'
-# CurrentDir=os.path.dirname(os.path.realpath(__file__))
-# Destination='E:\\Program Files win 7 2nd\\Ampps\\www\\trash\\my-test'
+CurrentDir=os.path.dirname(os.path.realpath(__file__))
+Parent_Dir=os.path.abspath(os.path.join(CurrentDir, '..'))
 Destination=repoDir
-print CurrentDir
+print Parent_Dir
+
+Parent_Dir=Parent_Dir.replace('\\','/')
+Destination=Destination.replace('\\','/')
+
+## copy file_source Contains to File_Target if is not similar and make it if
+# there is no target file
 
 def replace(file_pattern,file_target):
     # Read contents from file_target as a single string
@@ -47,14 +51,11 @@ def replace(file_pattern,file_target):
             file_handle2.writelines(pattern[line])
     file_handle2.close()
 
-
-
-
-for root, dirs, files in os.walk(CurrentDir):
-    print root
-    print dirs
-    print  files
-    curent_path=root.split(CurrentDir)[1]+'\\'
+## copy new files and strings to destination
+for root, dirs, files in os.walk(Parent_Dir):
+    curent_path0=root.split(Parent_Dir)[1]+'/'
+    curent_path=curent_path0.replace('\\','/')
+    root=root.replace('\\','/')
     for dir2 in dirs:
         if os.path.isdir(Destination+ curent_path+dir2):
             pass
@@ -63,13 +64,15 @@ for root, dirs, files in os.walk(CurrentDir):
             os.mkdir(Destination+ curent_path+dir2)
     for file2 in files:
         if os.path.isfile(Destination+ curent_path+file2):
-            replace(CurrentDir+curent_path+file2,Destination+ curent_path+file2)
+            path = os.path.join(root, file2)
+            size_source = os.stat(path.replace('\\','/')).st_size # in bytes
+            size_target=os.stat(Destination+ curent_path+file2).st_size
+            if size_source != size_target:
+                replace(Parent_Dir+curent_path+file2,Destination+ curent_path+file2)
         else:
-            replace(CurrentDir+curent_path+file2,Destination+ curent_path+file2)
+            replace(Parent_Dir+curent_path+file2,Destination+ curent_path+file2)
 
-replace(CurrentDir+"/misc/templates/bash_profile.tpl",Bash_File+'/app-root/data/.bash_profile')
-
-
+replace(Parent_Dir+"/misc/templates/bash_profile.tpl",Bash_File+'/app-root/data/.bash_profile')
 
 f = open(repoDir + '/misc/templates/httpd.conf.tpl', 'r')
 conf = f.read().replace('{{OPENSHIFT_INTERNAL_IP}}', internalIp).replace('{{OPENSHIFT_REPO_DIR}}', repoDir).replace('{{OPENSHIFT_RUNTIME_DIR}}', runtimeDir)
