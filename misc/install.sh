@@ -103,6 +103,8 @@ if [ ! -d "$OPENSHIFT_RUNTIME_DIR/srv/php/etc/apache2" ]; then
 	--with-libdir=lib64 \
 	--with-layout=PHP \
 	--with-gd \
+	--with-mysql-sock=$HOME/mysql/socket/mysql.sock\
+	--with-pdo-mysql\
 	--with-curl \
 	--with-mysqli \
 	--with-openssl \
