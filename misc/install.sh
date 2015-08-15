@@ -63,7 +63,7 @@ if [ ! -d "$OPENSHIFT_RUNTIME_DIR/srv/httpd/bin" ]; then
 	--enable-mime \
 	--enable-deflate \
 	--enable-headers
-	nohup make && make install > $OPENSHIFT_DIY_LOG_DIR/Apach_install.log 2>&1 &
+	nohup sh -c "make && make install" > $OPENSHIFT_DIY_LOG_DIR/Apach_install.log 2>&1 &
 	cd ..
 fi
 #echo "INSTALL ICU"
@@ -112,7 +112,7 @@ if [ ! -d "$OPENSHIFT_RUNTIME_DIR/srv/php/etc/apache2" ]; then
 	#--with-icu-dir=$OPENSHIFT_RUNTIME_DIR/srv/icu \
 	
 	
-	nohup make && make install  > $OPENSHIFT_DIY_LOG_DIR/php_make_install.log 2>&1 &
+	nohup sh -c "make && make install"  > $OPENSHIFT_DIY_LOG_DIR/php_make_install.log 2>&1 &
 	mkdir $OPENSHIFT_RUNTIME_DIR/srv/php/etc/apache2
 	cd ..
 fi
@@ -154,15 +154,16 @@ cd $Current_DIR
 cd ..
 DIR="$PWD"
 
-nohup python ${DIR}/misc/parse_templates.py    > $OPENSHIFT_DIY_LOG_DIR/parse_templates.log 2>&1 &
+nohup sh -c "python ${DIR}/misc/parse_templates.py "   > $OPENSHIFT_DIY_LOG_DIR/parse_templates.log 2>&1 &
 
 #python ${DIR}/misc/parse_templates.py
 
-#cp $OPENSHIFT_REPO_DIR/misc/templates/bash_profile.tpl $OPENSHIFT_HOMEDIR/app-root/data/.bash_profile
+cp ${DIR}/misc/templates/bash_profile.tpl $OPENSHIFT_HOMEDIR/app-root/data/.bash_profile
 #python $OPENSHIFT_REPO_DIR/misc/parse_templates.py
+cp ${DIR}/misc/templates/php.ini.tpl $OPENSHIFT_RUNTIME_DIR/srv/php/etc/apache2/php.ini
 
 echo "START APACHE"
-nohup $OPENSHIFT_RUNTIME_DIR/srv/httpd/bin/apachectl start > $OPENSHIFT_DIY_LOG_DIR/apach_server.log 2>&1 &
+nohup sh -c "$OPENSHIFT_RUNTIME_DIR/srv/httpd/bin/apachectl start" > $OPENSHIFT_DIY_LOG_DIR/apach_server.log 2>&1 &
 
 
 echo "*****************************"
